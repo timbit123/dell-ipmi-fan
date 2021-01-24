@@ -8,9 +8,9 @@ const configPath = path.join('config', 'config.yaml')
 if(!fs.existsSync(configPath)){
   fs.copyFileSync(path.join('config', 'config.yaml.template'), configPath)
 }
-const settingsRaw = fs.readFileSync(configPath).toString()
-const settings = yaml.parse(settingsRaw)
-const ipmi = new Ipmi(settings)
-const loop = new Loop(settings, ipmi)
+const rawConfig = fs.readFileSync(configPath).toString()
+const config = yaml.parse(rawConfig)
+const ipmi = new Ipmi(config)
+const loop = new Loop(config, ipmi)
 loop.startLoop()
 
