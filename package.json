@@ -7,6 +7,7 @@
     "start": "node --experimental-modules src/index.mjs",
     "install": "pm2 startup && pm2 startOrRestart ecosystem.config.yaml && pm2 save",
     "uninstall": "pm2 delete ecosystem.config.yaml && pm2 save --force",
+    "logs": "pm2 logs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

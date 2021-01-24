@@ -4,6 +4,7 @@ import { decToHex } from 'hex2dec'
 class Ipmi {
     config = {}
     dynamicFanControlActivated = false
+    lastPercentage
     /**
      *
      * @param config
@@ -15,7 +16,12 @@ class Ipmi {
     async updateFan(){
         const temp = await this.readTemps()
         const percentage = this._calculatePercentage(temp)
-        await this.setFanSpeed(percentage)
+
+        // If same percentage don't update
+        if(percentage !== this.lastPercentage){
+            this.lastPercentage = percentage
+            await this.setFanSpeed(percentage)
+        }
     }
 
     async readTemps(){
