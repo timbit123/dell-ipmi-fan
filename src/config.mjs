@@ -32,9 +32,9 @@ class Config {
    * @returns {Config}
    */
   static loadFromFile () {
-    const configPath = path.join('..', 'config', 'config.yaml')
+    const configPath = path.join('config', 'config.yaml')
     if (!fs.existsSync(configPath)) {
-      fs.copyFileSync(path.join('..', 'config', 'config.yaml.template'), configPath)
+      fs.copyFileSync(path.join('config', 'config.yaml.template'), configPath)
     }
     const fileString = fs.readFileSync(configPath).toString()
     return new Config(yaml.parse(fileString))
