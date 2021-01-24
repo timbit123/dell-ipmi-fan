@@ -19,6 +19,21 @@
     "yaml": "^1.10.0"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "standard": "^16.0.3"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "modules": true,
+        "experimentalObjectRestSpread": true
+      }
+    }
   }
 }

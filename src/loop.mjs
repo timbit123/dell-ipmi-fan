@@ -19,8 +19,8 @@ class Loop {
     this.loop()
   }
 
-  async loop(){
-    if(!this.isLooping){
+  async loop () {
+    if (!this.isLooping) {
       return
     }
     await this.ipmi.updateFan()
@@ -31,4 +31,5 @@ class Loop {
     this.isLooping = false
   }
 }
+
 export default Loop
