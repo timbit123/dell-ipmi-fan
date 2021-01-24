@@ -1,12 +1,13 @@
 class Loop {
-  config = {}
+  /** @var {Config} */
+  config
   isLooping = false
   /** @var {Ipmi} */
   ipmi
 
   /**
    *
-   * @param {object} config
+   * @param {Config} config
    * @param {Ipmi} ipmi
    */
   constructor (config, ipmi) {

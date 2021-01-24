@@ -2,18 +2,23 @@ import { spawn } from './spawn.mjs'
 import { decToHex } from 'hex2dec'
 
 class Ipmi {
-  config = {}
+  /** @var {Config} */
+  config
   dynamicFanControlActivated = false
   lastPercentage
 
   /**
    *
-   * @param config
+   * @param {Config} config
    */
   constructor (config) {
     this.config = config
   }
 
+  /**
+   * Get the current temperature and update fan speed if required
+   * @returns {Promise<void>}
+   */
   async updateFan () {
     const temp = await this.readTemps()
     const percentage = this._calculatePercentage(temp)
@@ -25,21 +30,30 @@ class Ipmi {
     }
   }
 
+  /**
+   * Fetch IPMI temperature using pointer from configuration (temp probe name)
+   * @returns {Promise<number>} temperature
+   */
   async readTemps () {
     const args = this._generateLogin()
     args.push('sdr', 'type', 'temp')
-    const result = await spawn(this.config.ipmitool_bin_path, args)
+    const result = await spawn(this.config.ipmitoolBinPath, args)
     const line = result
       .split('\n')
-      .filter(line => line.indexOf(this.config.fan.temp.pointer) !== -1)
+      .filter(line => line.indexOf(this.config.temp.pointer) !== -1)
     if (!line.length) {
-      throw new Error(`Temperature not found, please update pointer setting\n${result}`)
+      throw new Error(`Temperature not found, please update pointer setting from this list\n${result}`)
     }
     const temp = this._findTemperature(line[0])
-    console.log(`Current temperature for ${this.config.fan.temp.pointer} : ${temp} C`)
+    console.log(`Current temperature for ${this.config.temp.pointer} : ${temp} C`)
     return temp
   }
 
+  /**
+   * Activate or Deactivate dynamic fan control
+   * @param {boolean} activate
+   * @returns {Promise<void>}
+   */
   async dynamicFanControl (activate = false) {
     const args = [...this._generateLogin(), 'raw', '0x30', '0x30', '0x01']
     if (activate) {
@@ -47,11 +61,16 @@ class Ipmi {
     } else {
       args.push('0x00')
     }
-    const result = await spawn(this.config.ipmitool_bin_path, args)
+    const result = await spawn(this.config.ipmitoolBinPath, args)
     this.dynamicFanControlActivated = activate
     console.log(result)
   }
 
+  /**
+   * Convert percentage to hex and send the value to IPMI
+   * @param {number} percentage
+   * @returns {Promise<void>}
+   */
   async setFanSpeed (percentage) {
     if (this.dynamicFanControlActivated) {
       await this.dynamicFanControl(false)
@@ -59,7 +78,7 @@ class Ipmi {
     const args = [...this._generateLogin(), 'raw', '0x30', '0x30', '0x02', '0xff']
     args.push(decToHex(percentage.toString()))
     console.log(`Setting fan to ${percentage}%`)
-    await spawn(this.config.ipmitool_bin_path, args)
+    await spawn(this.config.ipmitoolBinPath, args)
   }
 
   /**
@@ -69,16 +88,17 @@ class Ipmi {
    * @private
    */
   _calculatePercentage (deg) {
-    const { min, max, temp } = this.config.fan
-    const deltaTemp = temp.max - temp.min
-    const deltaFan = max - min
+    const { min: fanMin, max: fanMax } = this.config.fan
+    const { min: tempMin, max: tempMax } = this.config.temp
+    const deltaTemp = tempMax - tempMin
+    const deltaFan = fanMax - fanMin
     const steps = deltaFan / deltaTemp
-    if (deg < temp.min) {
-      return min
-    } else if (deg > temp.max) {
-      return max
+    if (deg < tempMin) {
+      return fanMin
+    } else if (deg > tempMax) {
+      return fanMax
     } else {
-      return Math.ceil((deg - temp.min) * steps + min)
+      return Math.ceil((deg - tempMin) * steps + fanMin)
     }
   }
 
