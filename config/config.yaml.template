@@ -1,0 +1,14 @@
+ipmitool_bin_path: /usr/bin/ipmitool
+looptime: 5000 #ms (ipmi tool takes few second to response, loop restart after execution time)
+fan:
+  max: 100 #percentage max
+  min: 10 #percentage min
+  temp:
+    pointer: Exhaust
+    max: 70 #temp max to go max fan speed
+    min: 30 #temp min to go min fan speed
+remote:
+  enable: false
+  user: root
+  host: 0.0.0.0
+  password: calvin

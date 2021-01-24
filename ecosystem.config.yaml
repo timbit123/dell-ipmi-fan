@@ -1,0 +1,6 @@
+apps:
+  - script   : ./src/index.mjs
+    name     : 'IPMI fan controller'
+    instances: 1
+    exec_mode: fork
+    node_args: '--experimental-modules'

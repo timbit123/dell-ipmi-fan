@@ -1,0 +1,23 @@
+{
+  "name": "dell-ipmi-fan",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --experimental-modules src/index.mjs",
+    "install": "pm2 startup && pm2 startOrRestart ecosystem.config.yaml && pm2 save",
+    "uninstall": "pm2 delete ecosystem.config.yaml && pm2 save --force",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hex2dec": "^1.1.2",
+    "pm2": "^4.5.1",
+    "yaml": "^1.10.0"
+  },
+  "devDependencies": {
+    "standard": "^16.0.3"
+  }
+}
